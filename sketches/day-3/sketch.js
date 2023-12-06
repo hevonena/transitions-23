@@ -14,6 +14,13 @@ let spring
 let gridPoints = []
 let waterSurface
 let level = 0
+let plouf
+let win
+
+window.preload = function () {
+    plouf = loadSound("asset/plouf.wav")
+    win = loadSound("asset/win.mp3")
+}
 
 window.setup = function () {
     createCanvas(windowWidth, windowHeight)
@@ -92,12 +99,20 @@ window.draw = function () {
     physics.update()
 
     flatness() && level == 25 ? finished = true : null
+    if (finished && !win.isPlaying()) {
+
+        win.play()
+        noLoop()
+    }
 
     gridPoints.forEach(p => {
         if (level == 0) {
             if (p.position.y > centerY + objSize / 2) {
                 p.fell = true
                 raiseWaterSurface()
+                if (!plouf.isPlaying()) {
+                    plouf.play()
+                }
             }
         } else {
             if (belowWaterSurface(p.position.x, p.position.y) && !p.fell) {
@@ -105,6 +120,13 @@ window.draw = function () {
 
                 p.fell = true
                 p.falling = false
+
+                if (!plouf.isPlaying()) {
+                    plouf.play()
+                } else {
+                    plouf.stop()
+                    plouf.play()
+                }
             }
         }
     })
