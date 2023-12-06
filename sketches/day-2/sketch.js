@@ -2,6 +2,14 @@ let sceneSize, centerX, centerY, objSize, strokeW
 let fortune = []
 let finished = false
 
+let bone
+let crack
+
+window.preload = function () {
+    bone = loadSound("asset/bone.mp3")
+    crack = loadSound("asset/crack.wav")
+}
+
 window.setup = function () {
     createCanvas(windowWidth, windowHeight)
     sceneSize = min(width, height)
@@ -86,19 +94,43 @@ class Fortune {
             switch (i) {
                 case 1:
                     //Up Left
+                    if (bone.isPlaying()) {
+                        bone.stop()
+                        bone.play()
+                    } else {
+                        bone.play()
+                    }
                     this.springs[2].target = 1
                     break
                 case 2:
                     //Bottom Left
+                    if (bone.isPlaying()) {
+                        bone.stop()
+                        bone.play()
+                    } else {
+                        bone.play()
+                    }
                     this.springs[1].target = 1
 
                     break
                 case 3:
                     //Bottom Right
+                    if (bone.isPlaying()) {
+                        bone.stop()
+                        bone.play()
+                    } else {
+                        bone.play()
+                    }
                     this.springs[0].target = 1
                     break
                 case 4:
                     //Up Right
+                    if (bone.isPlaying()) {
+                        bone.stop()
+                        bone.play()
+                    } else {
+                        bone.play()
+                    }
                     this.springs[3].target = 1
                     break
             }
@@ -106,6 +138,7 @@ class Fortune {
             if (dist(x, y, this.center.x, this.center.y) < this.size / 2) {
                 this.springs.forEach(s => {
                     s.target += 0.5
+                    crack.play()
                     setTimeout(() => {
                         s.target = 1.2
                     }, 100)
