@@ -1,4 +1,4 @@
-import { VerletPhysics } from "../../shared/verletPhysics.js"
+import { VerletPhysics } from "./verletPhysics.js"
 import { DragManager } from "../../shared/dragManager.js"
 import { SpringNumber } from "../../shared/spring.js"
 
