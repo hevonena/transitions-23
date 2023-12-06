@@ -14,7 +14,7 @@ export class VerletPhysics {
 
         this.links = []
         this.bodies = []
-        this.iterations = 3
+        this.iterations = 15
         this.gravityX = 0
         this.gravityY = 0
         this.bounds  // {left,right,top,bottom}
@@ -56,265 +56,113 @@ export class VerletPhysics {
         const bodies = []
         const links = []
 
+        let startX, startY, endX, endY, start2X, start2Y, end2X, end2Y, a
         if (quadrant == 1) {
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0, 0.99)
-                const x = lerp(startPositionX, startPositionX, t)
-                const y = lerp(startPositionY, startPositionY - size, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, -PI / 2 + 0.05, -0.05)
-                const x = cos(t) * size + startPositionX
-                const y = sin(t) * size + startPositionY
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0.01, 1)
-                const x = lerp(startPositionX + size, startPositionX, t)
-                const y = lerp(startPositionY, startPositionY, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-
+            startX = startPositionX
+            startY = startPositionY
+            endX = startPositionX
+            endY = startPositionY - size
+            start2X = startPositionX + size
+            start2Y = startPositionY
+            end2X = startPositionX
+            end2Y = startPositionY
+            a = 0
         } else if (quadrant == 2) {
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0, 0.99)
-                const x = lerp(startPositionX, startPositionX - size, t)
-                const y = lerp(startPositionY, startPositionY, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, -PI + 0.05, -PI / 2 - 0.05)
-                const x = cos(t) * size + startPositionX
-                const y = sin(t) * size + startPositionY
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0.01, 1)
-                const x = lerp(startPositionX, startPositionX, t)
-                const y = lerp(startPositionY - size, startPositionY, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-
+            startX = startPositionX
+            startY = startPositionY
+            endX = startPositionX - size
+            endY = startPositionY
+            start2X = startPositionX
+            start2Y = startPositionY - size
+            end2X = startPositionX
+            end2Y = startPositionY
+            a = - PI / 2
         } else if (quadrant == 3) {
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0, 0.99)
-                const x = lerp(startPositionX, startPositionX, t)
-                const y = lerp(startPositionY, startPositionY + size, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, PI / 2 + 0.05, PI - 0.05)
-                const x = cos(t) * size + startPositionX
-                const y = sin(t) * size + startPositionY
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
-
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0.01, 1)
-                const x = lerp(startPositionX - size, startPositionX, t)
-                const y = lerp(startPositionY, startPositionY, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
-
-                    positionX: x,
-                    positionY: y,
-                }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
-            }
-
+            startX = startPositionX
+            startY = startPositionY
+            endX = startPositionX
+            endY = startPositionY + size
+            start2X = startPositionX - size
+            start2Y = startPositionY
+            end2X = startPositionX
+            end2Y = startPositionY
+            a = - PI
         } else if (quadrant == 4) {
-            for (let i = 0; i < floor(elementCount / 3); i++) {
+            startX = startPositionX
+            startY = startPositionY
+            endX = startPositionX + size
+            endY = startPositionY
+            start2X = startPositionX
+            start2Y = startPositionY + size
+            end2X = startPositionX
+            end2Y = startPositionY
+            a = - PI * 3 / 2
+        }
+        let prevBody;
+        for (let i = 0; i < floor(elementCount / 3); i++) {
 
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0, 0.99)
-                const x = lerp(startPositionX, startPositionX + size, t)
-                const y = lerp(startPositionY, startPositionY, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
+            const t = map(i, 0, floor(elementCount / 3) - 1, 0, 0.99)
+            const x = lerp(startX, endX, t)
+            const y = lerp(startY, endY, t)
+            const b = this.createBody(Object.assign({}, bodyOptions, {
 
-                    positionX: x,
-                    positionY: y,
+                positionX: x,
+                positionY: y,
+            }))
+
+            bodies.push(b)
+
+            if (prevBody) {
+                const link = this.createLink(Object.assign({}, linkOptions, {
+                    bodyA: prevBody,
+                    bodyB: b
                 }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
+                links.push(link)
             }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
+            prevBody = b
+        }
+        for (let i = 0; i < floor(elementCount / 3); i++) {
 
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0.05, PI / 2 - 0.05)
-                const x = cos(t) * size + startPositionX
-                const y = sin(t) * size + startPositionY
-                const b = this.createBody(Object.assign({}, bodyOptions, {
+            const t = map(i, 0, floor(elementCount / 3) - 1, a - PI / 2 + 0.05, a - 0.05)
+            const x = cos(t) * size + startX
+            const y = sin(t) * size + startY
+            const b = this.createBody(Object.assign({}, bodyOptions, {
+                positionX: x,
+                positionY: y,
+            }))
 
-                    positionX: x,
-                    positionY: y,
+            bodies.push(b)
+
+            if (prevBody) {
+                const link = this.createLink(Object.assign({}, linkOptions, {
+                    bodyA: prevBody,
+                    bodyB: b
                 }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
+                links.push(link)
             }
-            for (let i = 0; i < floor(elementCount / 3); i++) {
+            prevBody = b
+        }
+        for (let i = 0; i < floor(elementCount / 3); i++) {
 
-                const t = map(i, 0, floor(elementCount / 3) - 1, 0.01, 1)
-                const x = lerp(startPositionX, startPositionX, t)
-                const y = lerp(startPositionY + size, startPositionY, t)
-                const b = this.createBody(Object.assign({}, bodyOptions, {
+            const t = map(i, 0, floor(elementCount / 3) - 1, 0.01, 1)
+            const x = lerp(start2X, end2X, t)
+            const y = lerp(start2Y, end2Y, t)
+            const b = this.createBody(Object.assign({}, bodyOptions, {
 
-                    positionX: x,
-                    positionY: y,
+                positionX: x,
+                positionY: y,
+            }))
+
+            bodies.push(b)
+
+            if (prevBody) {
+                const link = this.createLink(Object.assign({}, linkOptions, {
+                    bodyA: prevBody,
+                    bodyB: b
                 }))
-
-                bodies.push(b)
-
-                if (i > 0) {
-                    const link = this.createLink(Object.assign({}, linkOptions, {
-                        bodyA: bodies[i - 1],
-                        bodyB: bodies[i]
-                    }))
-                    links.push(link)
-                }
+                links.push(link)
             }
+            prevBody = b
         }
 
 
@@ -330,10 +178,11 @@ export class VerletPhysics {
         for (let i = 0; i < bodies.length; i++) {
             for (let j = 0; j < bodies.length; j++) {
                 if (i != j) {
-                    if (random(1) < 0.6) {
+                    if (random(1) < .2) {
                         const link = this.createLink(Object.assign({}, linkOptions, {
                             bodyA: bodies[i],
-                            bodyB: bodies[j]
+                            bodyB: bodies[j],
+                            stiffness: 0.0001
                         }))
                         links.push(link)
                     }
@@ -380,7 +229,7 @@ export class VerletPhysics {
             accelerationX: 0,
             accelerationY: 0,
             isFixed: isFixed ?? false,
-            drag: drag ?? 0,
+            drag: drag ?? 0.5,
             radius: radius ?? 0
         }
         this.bodies.push(body)

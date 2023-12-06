@@ -4,11 +4,12 @@ import { DragManager } from "../../shared/dragManager.js"
 const physics = new VerletPhysics()
 const dragManager = new DragManager()
 
-let blobs = []
 let quadrant1
 let quadrant2
 let quadrant3
 let quadrant4
+let debug = false
+let finished = false
 
 window.setup = function () {
 
@@ -18,8 +19,6 @@ window.setup = function () {
     const centerX = width / 2
     const centerY = height / 2
     const objSize = sceneSize / 2
-    const halfWidth = objSize / tan(60)
-    const strokeW = 20
 
     quadrant1 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2, quadrant: 1, elementCount: 32 })
     quadrant2 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2, quadrant: 2, elementCount: 32 })
@@ -84,8 +83,22 @@ window.windowResized = function () {
 
 window.mouseClicked = function () {
 }
+window.keyPressed = function () {
+
+    if (key === "d") {
+        debug = !debug
+    }
+}
 
 window.draw = function () {
+    let n = 0
+    notOnScreen(quadrant1.bodies) ? n++ : null
+    notOnScreen(quadrant2.bodies) ? n++ : null
+    notOnScreen(quadrant3.bodies) ? n++ : null
+    notOnScreen(quadrant4.bodies) ? n++ : null
+    n === 4 ? finished = true : null
+    finished ? console.log("ok") : null
+
     background(255)
     const sceneSize = min(width, height)
 
@@ -96,15 +109,12 @@ window.draw = function () {
     const strokeW = 20
 
     drawCross(centerX, centerY, objSize, strokeW)
-    //drawCircle(centerX, centerY, objSize)
 
     dragManager.update()
     physics.update()
 
     fill(0)
-    //noStroke()
-
-
+    // piece 1
     beginShape()
     const firstBody1 = quadrant1.bodies[0]
     vertex(firstBody1.positionX, firstBody1.positionY)
@@ -117,7 +127,7 @@ window.draw = function () {
     endShape()
 
 
-
+    // piece 2
     beginShape()
     const firstBody2 = quadrant2.bodies[0]
     vertex(firstBody2.positionX, firstBody2.positionY)
@@ -129,6 +139,7 @@ window.draw = function () {
     vertex(firstBody2.positionX, firstBody2.positionY)
     endShape()
 
+    // piece 3
     beginShape()
     const firstBody3 = quadrant3.bodies[0]
     vertex(firstBody3.positionX, firstBody3.positionY)
@@ -140,6 +151,7 @@ window.draw = function () {
     vertex(firstBody3.positionX, firstBody3.positionY)
     endShape()
 
+    // piece 4
     beginShape()
     const firstBody4 = quadrant4.bodies[0]
     vertex(firstBody4.positionX, firstBody4.positionY)
@@ -151,6 +163,8 @@ window.draw = function () {
     vertex(firstBody4.positionX, firstBody4.positionY)
     endShape()
 
+    if (debug)
+        physics.displayDebug()
 
 }
 
@@ -168,4 +182,17 @@ function drawCircle(x, y, size) {
     fill(0)
     noStroke()
     circle(x, y, size)
+}
+
+function notOnScreen(bodiies) {
+    let n = 0
+    for (const body of bodiies) {
+        if (body.positionX > width || body.positionX < 0 || body.positionY > height || body.positionY < 0) {
+            n++
+        }
+    }
+    if (n === bodiies.length) {
+        return true
+    }
+    return false
 }
