@@ -11,6 +11,12 @@ let quadrant4
 let debug = false
 let finished = false
 
+let mail
+
+window.preload = function () {
+    mail = loadSound("asset/mail.mp3")
+}
+
 window.setup = function () {
 
     createCanvas(windowWidth, windowHeight)
@@ -34,6 +40,7 @@ window.setup = function () {
             },
             onStopDrag: o => {
                 o.isFixed = false
+                mail.play()
             }
         })
     }
@@ -46,6 +53,7 @@ window.setup = function () {
             },
             onStopDrag: o => {
                 o.isFixed = false
+                mail.play()
             }
         })
     }
@@ -58,6 +66,7 @@ window.setup = function () {
             },
             onStopDrag: o => {
                 o.isFixed = false
+                mail.play()
             }
         })
     }
@@ -70,6 +79,7 @@ window.setup = function () {
             },
             onStopDrag: o => {
                 o.isFixed = false
+                mail.play()
             }
         })
     }
