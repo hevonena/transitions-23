@@ -30,10 +30,48 @@ export class VerletPhysics {
             const x = lerp(startPositionX, endPositionX, t)
             const y = lerp(startPositionY, endPositionY, t)
             const b = this.createBody(Object.assign({}, bodyOptions, {
-
                 positionX: x,
                 positionY: y,
             }))
+
+            bodies.push(b)
+
+            if (i > 0) {
+                const link = this.createLink(Object.assign({}, linkOptions, {
+                    bodyA: bodies[i - 1],
+                    bodyB: bodies[i]
+                }))
+                links.push(link)
+            }
+        }
+        return {
+            bodies,
+            links
+        }
+    }
+
+    createWaterSurface({ startPositionX, startPositionY, endPositionX, endPositionY, elementCount, bodyOptions, linkOptions }) {
+
+        const bodies = []
+        const links = []
+        for (let i = 0; i < elementCount; i++) {
+
+            const t = map(i, 0, elementCount - 1, 0, 1)
+            const x = lerp(startPositionX, endPositionX, t)
+            const y = lerp(startPositionY, endPositionY, t)
+            let b
+            if (i == 0 || i == elementCount - 1) {
+                b = this.createBody(Object.assign({}, bodyOptions, {
+                    positionX: x,
+                    positionY: y,
+                    isFixed: true
+                }))
+            } else {
+                b = this.createBody(Object.assign({}, bodyOptions, {
+                    positionX: x,
+                    positionY: y,
+                }))
+            }
 
             bodies.push(b)
 
