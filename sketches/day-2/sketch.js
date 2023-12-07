@@ -145,12 +145,12 @@ class Fortune {
                     setTimeout(() => {
                         s.target = 1.2
                     }, 100)
-                    setTimeout(() => {
-                        if(!finished) {
-                        finished = true
-                        sendSequenceNextSignal()
+                    crack.onended(() => {
+                        if (!finished) {
+                            finished = true
+                            sendSequenceNextSignal()
                         }
-                    }, 1500)
+                    })
                 })
 
             }

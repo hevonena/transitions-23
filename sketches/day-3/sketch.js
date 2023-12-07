@@ -240,7 +240,7 @@ function drop(x, y, p) {
                 closestPoint = body
             }
         })
-        closestPoint.positionY += 30
+        closestPoint.positionY += 25
     }
 }
 
