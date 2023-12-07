@@ -18,6 +18,8 @@ let level = 0
 let dropIndex = -1
 let plouf
 let win
+let played = false
+let dropped = false
 
 window.preload = function () {
     plouf = loadSound("asset/plouf.wav")
@@ -100,9 +102,11 @@ window.draw = function () {
     dragManager.update()
     physics.update()
 
-    flatness() && level == 25 ? finished = true : null
-    if (finished && !win.isPlaying()) {
+    //debugWaterSurface()
 
+    flatness() && level == 25 ? finished = true : null
+    if (finished && !win.isPlaying() && !played) {
+        played = true
         win.play()
         win.onended(() => {
             sendSequenceNextSignal()
@@ -141,7 +145,9 @@ window.draw = function () {
     if (level > 0) {
         drawWaterSurface()
     }
-    //drawSquare()
+    if (finished) {
+        drawSquare()
+    }
 }
 
 function drawCross() {
@@ -185,7 +191,7 @@ function updateWaterSurface() {
 }
 
 function belowWaterSurface(x, y) {
-    
+
     for (let i = 0; i < waterSurface.bodies.length - 1; i++) {
         const body1 = waterSurface.bodies[i]
         const body2 = waterSurface.bodies[i + 1]
@@ -197,14 +203,13 @@ function belowWaterSurface(x, y) {
             const yAtX = slope * (x - body1.positionX) + body1.positionY
             // Check if the given y is below the y-coordinate of the water surface at x
             if (y > yAtX - strokeW / 2) {
-                dropIndex = i
                 return true
             }
         }
     }
-    dropIndex = -1
     return false
 }
+
 
 
 
@@ -223,6 +228,17 @@ function flatness() {
     }
     diff /= waterSurface.bodies.length
     return diff < threshold
+}
+
+function debugWaterSurface() {
+    waterSurface.bodies.forEach((body, i) => {
+        fill(255, 0, 0)
+        noStroke()
+        circle(body.positionX, body.positionY, strokeW)
+        fill(0)
+        noStroke()
+        text(i, body.positionX, body.positionY)
+    })
 }
 
 function drawCircle(x, y, size) {
@@ -256,7 +272,7 @@ function initGrid() {
 }
 
 function drawSquare() {
-    fill(0, 255, 0, 100)
+    fill(0)
     noStroke()
     rectMode(CENTER)
     rect(centerX, centerY, objSize, objSize)
