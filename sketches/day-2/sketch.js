@@ -1,3 +1,5 @@
+import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
+
 let sceneSize, centerX, centerY, objSize, strokeW
 let fortune = []
 let finished = false
@@ -143,9 +145,12 @@ class Fortune {
                         s.target = 1.2
                     }, 100)
                     setTimeout(() => {
+                        if(!finished) {
                         finished = true
-                        console.log("ok")
-                    }, 1000)
+                        sendSequenceNextSignal()
+                        }
+                        //console.log("ok")
+                    }, 1500)
                 })
 
             }
@@ -181,7 +186,8 @@ class Fortune {
             p.x = lerp(this.corners[i].x, this.finalCorners[i].x, this.springs[i].position - 1)
             p.y = lerp(this.corners[i].y, this.finalCorners[i].y, this.springs[i].position - 1)
         })
-        this.strokeW = map(this.springs[0].position, 1, 1.2, 20, 0)
+        //this.strokeW = map(this.springs[0].position, 1, 1.2, 20, 0)
+        this.strokeW > 0 ? this.strokeW -= 0.7 : this.strokeW = 0
         this.strokeDots = map(this.springs[0].position, 1, 1.2, 18, 20)
     }
 

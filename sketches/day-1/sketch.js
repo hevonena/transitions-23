@@ -1,5 +1,6 @@
 import { VerletPhysics } from "./verletPhysics.js"
 import { DragManager } from "../../shared/dragManager.js"
+import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
 
 const physics = new VerletPhysics()
 const dragManager = new DragManager()
@@ -107,7 +108,11 @@ window.draw = function () {
     notOnScreen(quadrant3.bodies) ? n++ : null
     notOnScreen(quadrant4.bodies) ? n++ : null
     n === 4 ? finished = true : null
-    finished ? console.log("ok") : null
+    //finished ? console.log("ok") : null
+    if (finished) {
+        sendSequenceNextSignal()
+        noLoop()
+    }
 
     background(255)
     const sceneSize = min(width, height)

@@ -228,7 +228,7 @@ export class VerletPhysics {
             }
         }
 
-        console.log(this.links.length);
+        //console.log(this.links.length);
 
         return {
             bodies,

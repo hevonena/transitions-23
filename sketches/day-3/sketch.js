@@ -1,6 +1,7 @@
 import { VerletPhysics } from "./verletPhysics.js"
 import { DragManager } from "../../shared/dragManager.js"
 import { SpringNumber } from "../../shared/spring.js"
+import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
 
 
 const physics = new VerletPhysics()
@@ -14,6 +15,7 @@ let spring
 let gridPoints = []
 let waterSurface
 let level = 0
+let dropIndex = -1
 let plouf
 let win
 
@@ -102,6 +104,7 @@ window.draw = function () {
     if (finished && !win.isPlaying()) {
 
         win.play()
+        sendSequenceNextSignal()
         noLoop()
     }
 
@@ -174,12 +177,14 @@ function updateWaterSurface() {
     const bottomRight = { x: centerX + objSize / 2, y: centerY + objSize / 2 }
     const topLeft = { x: centerX - objSize / 2, y: centerY - objSize / 2 }
     const topRight = { x: centerX + objSize / 2, y: centerY - objSize / 2 }
+    //console.log(dropIndex);
 
     waterSurface.bodies[0].positionY = lerp(bottomLeft.y, topLeft.y, spring.position)
     waterSurface.bodies[waterSurface.bodies.length - 1].positionY = lerp(bottomRight.y, topRight.y, spring.position)
 }
 
 function belowWaterSurface(x, y) {
+    
     for (let i = 0; i < waterSurface.bodies.length - 1; i++) {
         const body1 = waterSurface.bodies[i]
         const body2 = waterSurface.bodies[i + 1]
@@ -191,10 +196,12 @@ function belowWaterSurface(x, y) {
             const yAtX = slope * (x - body1.positionX) + body1.positionY
             // Check if the given y is below the y-coordinate of the water surface at x
             if (y > yAtX - strokeW / 2) {
+                dropIndex = i
                 return true
             }
         }
     }
+    dropIndex = -1
     return false
 }
 
@@ -214,7 +221,7 @@ function flatness() {
         diff += abs(body1.positionY - body2.positionY)
     }
     diff /= waterSurface.bodies.length
-    console.log("average difference: " + diff + "finished: " + finished + " level: " + level);
+    //console.log("average difference: " + diff + "finished: " + finished + " level: " + level);
     return diff < threshold
 }
 
