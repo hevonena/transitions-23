@@ -81,7 +81,6 @@ window.draw = function () {
         }
         if (outCount == 4 && !finished) {
             finished = true
-            console.log("finished");
             sendSequenceNextSignal()
             noLoop()
         }
@@ -93,9 +92,7 @@ window.draw = function () {
 
         corners.forEach(c => {
             if (c.isMe(slingshot.position.positionX, slingshot.position.positionY) && slingshot.flying) {
-                console.log("hit " + c.angle / (PI / 2));
                 c.click(structuredClone(slingshot.collisionVelocity))
-                //c.color = color(255)
             }
         })
     }

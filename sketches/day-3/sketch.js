@@ -104,8 +104,10 @@ window.draw = function () {
     if (finished && !win.isPlaying()) {
 
         win.play()
-        sendSequenceNextSignal()
-        noLoop()
+        win.onended(() => {
+            sendSequenceNextSignal()
+            noLoop()
+        })
     }
 
     gridPoints.forEach(p => {
@@ -177,7 +179,6 @@ function updateWaterSurface() {
     const bottomRight = { x: centerX + objSize / 2, y: centerY + objSize / 2 }
     const topLeft = { x: centerX - objSize / 2, y: centerY - objSize / 2 }
     const topRight = { x: centerX + objSize / 2, y: centerY - objSize / 2 }
-    //console.log(dropIndex);
 
     waterSurface.bodies[0].positionY = lerp(bottomLeft.y, topLeft.y, spring.position)
     waterSurface.bodies[waterSurface.bodies.length - 1].positionY = lerp(bottomRight.y, topRight.y, spring.position)
@@ -221,7 +222,6 @@ function flatness() {
         diff += abs(body1.positionY - body2.positionY)
     }
     diff /= waterSurface.bodies.length
-    //console.log("average difference: " + diff + "finished: " + finished + " level: " + level);
     return diff < threshold
 }
 

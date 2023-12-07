@@ -13,12 +13,20 @@ let quadrant4
 let debug = false
 let finished = false
 
+//mouse release
+
+
 let sceneSize, centerX, centerY, objSize, strokeW
 let spring1, spring2, spring3, spring4
-let mail
+let plop1 = false
+let plop2 = false
+let plop3 = false
+let plop4 = false
+let mail, plop
 
 window.preload = function () {
     mail = loadSound("asset/mail.mp3")
+    plop = loadSound("asset/plop.wav")
 }
 
 window.setup = function () {
@@ -142,8 +150,7 @@ window.draw = function () {
     spring4.step(deltaTime / 1000)
 
     updateCross()
-    
-    //finished ? console.log("ok") : null
+
     if (!finished && n === 4) {
         setTimeout(() => {
             finished = true
@@ -240,19 +247,35 @@ function drawCross(x, y, size, strokeW) {
 }
 
 function updateCross() {
-    if (notOnScreen(quadrant1.bodies) &&  notOnScreen(quadrant2.bodies)) {
+    if (notOnScreen(quadrant1.bodies) && notOnScreen(quadrant2.bodies)) {
+        if (!plop1) {
+            plop.play()
+            plop1 = true
+        }
         spring3.target = 1
     }
-    if (notOnScreen(quadrant2.bodies) &&  notOnScreen(quadrant3.bodies)) {
+    if (notOnScreen(quadrant2.bodies) && notOnScreen(quadrant3.bodies)) {
+        if (!plop2) {
+            plop.play()
+            plop2 = true
+        }
         spring1.target = 1
     }
-    if (notOnScreen(quadrant3.bodies) &&  notOnScreen(quadrant4.bodies)) {
+    if (notOnScreen(quadrant3.bodies) && notOnScreen(quadrant4.bodies)) {
+        if (!plop3) {
+            plop.play()
+            plop3 = true
+        }
         spring4.target = 1
     }
-    if (notOnScreen(quadrant4.bodies) &&  notOnScreen(quadrant1.bodies)) {
+    if (notOnScreen(quadrant4.bodies) && notOnScreen(quadrant1.bodies)) {
+        if (!plop4) {
+            plop.play()
+            plop4 = true
+        }
         spring2.target = 1
     }
-   
+
 }
 
 function drawCircle() {

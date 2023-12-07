@@ -10,6 +10,7 @@ let crack
 window.preload = function () {
     bone = loadSound("asset/bone.mp3")
     crack = loadSound("asset/crack.wav")
+    crack.setVolume(0.1)
 }
 
 window.setup = function () {
@@ -149,7 +150,6 @@ class Fortune {
                         finished = true
                         sendSequenceNextSignal()
                         }
-                        //console.log("ok")
                     }, 1500)
                 })
 
