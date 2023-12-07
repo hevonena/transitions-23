@@ -17,12 +17,13 @@ let slingshot
 let corners = []
 let slingshotExists = false
 
-let stretch, bounce1, bounce2
+let stretch, bounce1, bounce2, fall
 
 window.preload = function () {
     stretch = loadSound("asset/stretch.wav")
     bounce1 = loadSound("asset/bounce1.wav")
     bounce2 = loadSound("asset/bounce2.wav")
+    fall = loadSound("asset/fall.wav")
 }
 
 window.setup = function () {
@@ -231,8 +232,9 @@ class Corner {
         this.angle = angle
         this.color = color(0)
         this.falling = false
-        this.velocity = { x: 0, y: 0 }
+        this.velocity = { x: 0, y: 10 }
         this.out = false
+        this.fallingRotation = 0
     }
     display() {
         fill(this.color)
@@ -252,7 +254,7 @@ class Corner {
 
         push()
         translate(this.position.x, this.position.y)
-        rotate(this.angle)
+        rotate(this.angle+this.fallingRotation)
         beginShape();
         vertex(p0.x, p0.y); // first point
         bezierVertex(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y,)
@@ -279,15 +281,17 @@ class Corner {
     }
 
     click(velocity) {
-        this.velocity.x = velocity.x / 2
-        this.velocity.y = velocity.y / 2
         this.falling = true
+        fall.play()
     }
     update() {
         if (this.falling && !this.out) {
+            this.fallingRotation += 0.1
+
             if (this.position.y > height + this.size + 10) {
                 this.out = true
             }
+            
             this.velocity.y += 0.5
             this.position.x += this.velocity.x
             this.position.y += this.velocity.y
