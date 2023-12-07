@@ -15,11 +15,9 @@ let spring
 let gridPoints = []
 let waterSurface
 let level = 0
-let dropIndex = -1
 let plouf
 let win
 let played = false
-let dropped = false
 
 window.preload = function () {
     plouf = loadSound("asset/plouf.wav")
@@ -128,6 +126,7 @@ window.draw = function () {
                 raiseWaterSurface()
 
                 p.fell = true
+                drop(p.position.x, p.position.y, p)
                 p.falling = false
 
                 if (!plouf.isPlaying()) {
@@ -218,7 +217,7 @@ function raiseWaterSurface() {
 }
 
 function flatness() {
-    let threshold = 0.07
+    let threshold = 0.1
     let diff = 0
     for (let i = 0; i < waterSurface.bodies.length - 1; i++) {
         const body1 = waterSurface.bodies[i]
@@ -228,6 +227,21 @@ function flatness() {
     }
     diff /= waterSurface.bodies.length
     return diff < threshold
+}
+
+function drop(x, y, p) {
+    if (!p.drop) {
+        let minDist = Infinity
+        let closestPoint = null
+        waterSurface.bodies.forEach(body => {
+            let d = dist(x, y, body.positionX, body.positionY)
+            if (d < minDist) {
+                minDist = d
+                closestPoint = body
+            }
+        })
+        closestPoint.positionY += 30
+    }
 }
 
 function debugWaterSurface() {
@@ -291,6 +305,7 @@ class gridPoint {
         this.color = color(0)
         this.falling = false
         this.fell = false
+        this.drop = false
     }
     draw() {
         fill(this.color)
@@ -319,6 +334,10 @@ class gridPoint {
             if (this.position.x > centerX + objSize / 2) {
                 this.position.x = centerX + objSize / 2
                 this.velocity.x *= -1
+            }
+            if (this.fell && !this.drop) {
+                this.drop = true
+                drop(this.position.x, this.position.y)
             }
             // if (this.position.y < centerY - objSize / 2) {
             //     this.position.y = centerY - objSize / 2
