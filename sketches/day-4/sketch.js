@@ -56,7 +56,7 @@ window.mouseClicked = function () {
         setTimeout(() => {
             slingshot = new SlingShot((centerX - objSize / 2) / 2, centerY, strokeW)
             slingshotExists = true
-        }, 1000)
+        }, 300)
     }
 }
 
@@ -117,6 +117,7 @@ class SlingShot {
             target: this.position,
             onStartDrag: o => {
                 o.isFixed = true
+                this.grab = true
                 if (!stretch.isPlaying()) {
                     stretch.play()
                 }
@@ -125,6 +126,7 @@ class SlingShot {
                 if (stretch.isPlaying()) {
                     stretch.stop()
                 }
+                this.grab = false
                 o.isFixed = true
                 this.flying = true
             }
@@ -133,13 +135,12 @@ class SlingShot {
         this.flying = false
         this.hit = false
         this.color = color(0)
+        this.grab = false
     }
     display() {
         fill(this.color)
         if (!this.flying) {
             this.velocity = { x: (this.positionOrigin.x - this.position.positionX) * this.speed, y: (this.positionOrigin.y - this.position.positionY) * this.speed }
-            stroke(0)
-            line(this.positionOrigin.x, this.positionOrigin.y, this.position.positionX, this.position.positionY)
         }
         noStroke()
         circle(this.position.positionX, this.position.positionY, this.size)
@@ -148,7 +149,7 @@ class SlingShot {
         if (this.flying) {
             this.position.positionX += this.velocity.x
             this.position.positionY += this.velocity.y
-            this.velocity.y *= map(this.speed, 0, 1, 0.99, 0.98)
+
             this.velocity.x *= map(this.speed, 0, 1, 0.99, 0.98)
             this.velocity.y += map(this.speed, 0, 1, 0.1, 5)
 
@@ -209,8 +210,35 @@ class SlingShot {
                     this.reset()
                 }, 300)
             }
+        } else if (this.grab){
+            this.trajectory()
         }
     }
+    trajectory() {
+        let trajectory = []
+        let pos = { x: this.position.positionX, y: this.position.positionY }
+        let vel = { x: this.velocity.x, y: this.velocity.y }
+        let acc = { x: map(this.speed, 0, 1, 0.99, 0.98), y: map(this.speed, 0, 1, 0.1, 5) }
+        let dt = 0.1
+        let steps = 100
+        for (let i = 0; i < steps; i++) {
+            pos.x += vel.x * dt + 0.5 * acc.x * dt * dt
+            pos.y += vel.y * dt + 0.5 * acc.y * dt * dt
+            vel.x += acc.x * dt
+            vel.y += acc.y * dt
+            trajectory.push({ x: pos.x, y: pos.y })
+        }
+        // draw trajectory
+        stroke(0)
+        strokeWeight(1)
+        noFill()
+        beginShape()
+        trajectory.forEach(p => {
+            vertex(p.x, p.y)
+        })
+        endShape()
+    }
+
     collideCircle() {
         this.collisionVelocity = this.velocity
         return dist(this.position.positionX, this.position.positionY, centerX, centerY) < objSize / 2 - this.size
@@ -254,7 +282,7 @@ class Corner {
 
         push()
         translate(this.position.x, this.position.y)
-        rotate(this.angle+this.fallingRotation)
+        rotate(this.angle + this.fallingRotation)
         beginShape();
         vertex(p0.x, p0.y); // first point
         bezierVertex(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y,)
@@ -282,7 +310,9 @@ class Corner {
 
     click(velocity) {
         this.falling = true
-        fall.play()
+        if (!fall.isPlaying()) {
+            fall.play()
+        }
     }
     update() {
         if (this.falling && !this.out) {
@@ -291,7 +321,7 @@ class Corner {
             if (this.position.y > height + this.size + 10) {
                 this.out = true
             }
-            
+
             this.velocity.y += 0.5
             this.position.x += this.velocity.x
             this.position.y += this.velocity.y
