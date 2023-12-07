@@ -1,6 +1,7 @@
 import { VerletPhysics } from "./verletPhysics.js"
 import { DragManager } from "../../shared/dragManager.js"
 import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
+import { SpringNumber } from "../../shared/spring.js"
 
 const physics = new VerletPhysics()
 const dragManager = new DragManager()
@@ -12,6 +13,8 @@ let quadrant4
 let debug = false
 let finished = false
 
+let sceneSize, centerX, centerY, objSize, strokeW
+let spring1, spring2, spring3, spring4
 let mail
 
 window.preload = function () {
@@ -21,16 +24,41 @@ window.preload = function () {
 window.setup = function () {
 
     createCanvas(windowWidth, windowHeight)
-    const sceneSize = min(width, height)
+    sceneSize = min(width, height)
 
-    const centerX = width / 2
-    const centerY = height / 2
-    const objSize = sceneSize / 2
+    spring1 = new SpringNumber({
+        position: 0, // start position
+        frequency: 4.5, // oscillations per second (approximate)
+        halfLife: 0.15 // time until amplitude is halved
+    })
+    spring2 = new SpringNumber({
+        position: 0, // start position
+        frequency: 4.5, // oscillations per second (approximate)
+        halfLife: 0.15 // time until amplitude is halved
+    })
+    spring3 = new SpringNumber({
+        position: 0, // start position
+        frequency: 4.5, // oscillations per second (approximate)
+        halfLife: 0.15 // time until amplitude is halved
+    })
+    spring4 = new SpringNumber({
+        position: 0, // start position
+        frequency: 4.5, // oscillations per second (approximate)
+        halfLife: 0.15 // time until amplitude is halved
+    })
 
-    quadrant1 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2, quadrant: 1, elementCount: 32 })
-    quadrant2 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2, quadrant: 2, elementCount: 32 })
-    quadrant3 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2, quadrant: 3, elementCount: 32 })
-    quadrant4 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2, quadrant: 4, elementCount: 32 })
+
+
+
+    centerX = width / 2
+    centerY = height / 2
+    objSize = sceneSize / 2
+    strokeW = 20
+
+    quadrant1 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2 - strokeW / 2, quadrant: 1, elementCount: 32 })
+    quadrant2 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2 - strokeW / 2, quadrant: 2, elementCount: 32 })
+    quadrant3 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2 - strokeW / 2, quadrant: 3, elementCount: 32 })
+    quadrant4 = physics.createQuarter({ startPositionX: centerX, startPositionY: centerY, size: objSize / 2 - strokeW / 2, quadrant: 4, elementCount: 32 })
 
     for (const o of quadrant1.bodies) {
 
@@ -107,11 +135,21 @@ window.draw = function () {
     notOnScreen(quadrant2.bodies) ? n++ : null
     notOnScreen(quadrant3.bodies) ? n++ : null
     notOnScreen(quadrant4.bodies) ? n++ : null
-    n === 4 ? finished = true : null
+
+    spring1.step(deltaTime / 1000)
+    spring2.step(deltaTime / 1000)
+    spring3.step(deltaTime / 1000)
+    spring4.step(deltaTime / 1000)
+
+    updateCross()
+    
     //finished ? console.log("ok") : null
-    if (finished) {
-        sendSequenceNextSignal()
-        noLoop()
+    if (!finished && n === 4) {
+        setTimeout(() => {
+            finished = true
+            sendSequenceNextSignal()
+            noLoop()
+        }, 1000)
     }
 
     background(255)
@@ -129,6 +167,7 @@ window.draw = function () {
     physics.update()
 
     fill(0)
+    //noStroke()
     // piece 1
     beginShape()
     const firstBody1 = quadrant1.bodies[0]
@@ -178,6 +217,8 @@ window.draw = function () {
     vertex(firstBody4.positionX, firstBody4.positionY)
     endShape()
 
+
+    //drawCircle()
     if (debug)
         physics.displayDebug()
 
@@ -188,15 +229,36 @@ function drawCross(x, y, size, strokeW) {
     noStroke()
     rectMode(CENTER)
     strokeWeight(strokeW)
+    //strokeCap(SQUARE)
     stroke(0)
-    line(x - size / 2, y, x + size / 2, y)
-    line(x, y - size / 2, x, y + size / 2)
+    let p1 = { x: lerp(x - size / 2 + strokeW / 2, x - size / 2, spring1.position), y: y }
+    let p2 = { x: lerp(x + size / 2 - strokeW / 2, x + size / 2, spring2.position), y: y }
+    let p3 = { x: x, y: lerp(y - size / 2 + strokeW / 2, y - size / 2, spring3.position) }
+    let p4 = { x: x, y: lerp(y + size / 2 - strokeW / 2, y + size / 2, spring4.position) }
+    line(p1.x, p1.y, p2.x, p2.y)
+    line(p3.x, p3.y, p4.x, p4.y)
 }
 
-function drawCircle(x, y, size) {
-    fill(0)
+function updateCross() {
+    if (notOnScreen(quadrant1.bodies) &&  notOnScreen(quadrant2.bodies)) {
+        spring3.target = 1
+    }
+    if (notOnScreen(quadrant2.bodies) &&  notOnScreen(quadrant3.bodies)) {
+        spring1.target = 1
+    }
+    if (notOnScreen(quadrant3.bodies) &&  notOnScreen(quadrant4.bodies)) {
+        spring4.target = 1
+    }
+    if (notOnScreen(quadrant4.bodies) &&  notOnScreen(quadrant1.bodies)) {
+        spring2.target = 1
+    }
+   
+}
+
+function drawCircle() {
+    fill(0, 255, 255, 100)
     noStroke()
-    circle(x, y, size)
+    circle(centerX, centerY, objSize)
 }
 
 function notOnScreen(bodiies) {

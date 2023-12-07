@@ -33,11 +33,6 @@ window.setup = function () {
     objSize = sceneSize / 2
     strokeW = 20
 
-    setTimeout(() => {
-        slingshot = new SlingShot((centerX - objSize / 2) / 2, centerY, strokeW)
-        slingshotExists = true
-    }, 1000)
-
 
 
     for (let i = 0; i < 4; i++) {
@@ -56,6 +51,12 @@ window.windowResized = function () {
 }
 
 window.mouseClicked = function () {
+    if (!slingshotExists) {
+        setTimeout(() => {
+            slingshot = new SlingShot((centerX - objSize / 2) / 2, centerY, strokeW)
+            slingshotExists = true
+        }, 1000)
+    }
 }
 
 window.draw = function () {
