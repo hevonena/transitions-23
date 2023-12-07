@@ -87,16 +87,16 @@ window.draw = function () {
     })
 
     if (slingshotExists) {
-    slingshot.display()
-    slingshot.update()
+        slingshot.display()
+        slingshot.update()
 
-    corners.forEach(c => {
-        if (c.isMe(slingshot.position.positionX, slingshot.position.positionY) && slingshot.flying) {
-            console.log("hit " + c.angle / (PI / 2));
-            c.click(structuredClone(slingshot.collisionVelocity))
-            //c.color = color(255)
-        }
-    })
+        corners.forEach(c => {
+            if (c.isMe(slingshot.position.positionX, slingshot.position.positionY) && slingshot.flying) {
+                console.log("hit " + c.angle / (PI / 2));
+                c.click(structuredClone(slingshot.collisionVelocity))
+                //c.color = color(255)
+            }
+        })
     }
 }
 
@@ -118,12 +118,12 @@ class SlingShot {
             target: this.position,
             onStartDrag: o => {
                 o.isFixed = true
-                if(!stretch.isPlaying()){
+                if (!stretch.isPlaying()) {
                     stretch.play()
                 }
             },
             onStopDrag: o => {
-                if(stretch.isPlaying()){
+                if (stretch.isPlaying()) {
                     stretch.stop()
                 }
                 o.isFixed = true
@@ -154,7 +154,7 @@ class SlingShot {
             this.velocity.y += map(this.speed, 0, 1, 0.1, 5)
 
             if (this.position.positionX < this.size / 2) {
-                if(!bounce2.isPlaying()){
+                if (!bounce2.isPlaying()) {
                     bounce2.play()
                 } else {
                     bounce2.stop()
@@ -164,19 +164,19 @@ class SlingShot {
                 this.velocity.x *= map(this.speed, 0, 1, -1, -0.6)
             }
             if (this.position.positionX > width - this.size / 2) {
-                if(!bounce2.isPlaying()){
+                if (!bounce2.isPlaying()) {
                     bounce2.play()
                 } else {
                     bounce2.stop()
                     bounce2.play()
                 }
-                
+
                 this.position.positionX = width - this.size / 2
                 this.velocity.x *= map(this.speed, 0, 1, -1, -0.6)
             }
             // bounce on circle in the center of size objSize
             if (this.collideCircle()) {
-                if(!bounce1.isPlaying()){
+                if (!bounce1.isPlaying()) {
                     bounce1.play()
                 } else {
                     bounce1.stop()
