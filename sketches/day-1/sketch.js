@@ -175,6 +175,7 @@ window.draw = function () {
 
     fill(0)
     //noStroke()
+    strokeJoin(BEVEL)
     // piece 1
     beginShape()
     const firstBody1 = quadrant1.bodies[0]
