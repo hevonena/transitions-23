@@ -228,7 +228,7 @@ function raiseWaterSurface() {
 }
 
 function flatness() {
-    let threshold = 0.1
+    let threshold = 0.4
     let diff = 0
     for (let i = 0; i < waterSurface.bodies.length - 1; i++) {
         const body1 = waterSurface.bodies[i]
