@@ -210,7 +210,7 @@ class SlingShot {
                     this.reset()
                 }, 300)
             }
-        } else if (this.grab){
+        } else if (this.grab) {
             this.trajectory()
         }
     }

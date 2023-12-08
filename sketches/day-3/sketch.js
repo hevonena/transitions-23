@@ -84,11 +84,11 @@ window.mouseClicked = function () {
 window.draw = function () {
     let cursorType = ARROW
     gridPoints.forEach(p => {
-    
+
         if (p.isMe(mouseX, mouseY)) {
             cursorType = HAND
         }
-        
+
     })
     cursor(cursorType)
 
