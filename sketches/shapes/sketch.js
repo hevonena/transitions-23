@@ -28,8 +28,7 @@ window.draw = function () {
     const centerX = width / 2
     const centerY = height / 2
     const objSize = sceneSize / 2
-    const halfWidth = objSize / tan(60)
-    const strokeW = 20
+    const strokeW = objSize / 20
 
     switch (shapeId) {
         case 0:
